@@ -1,5 +1,7 @@
 PRODUCT_BRAND ?= LineageOS
 
+PRODUCT_BOOTANIMATION := vendor/cm/prebuilt/common/bootanimation/bootanimation.zip
+
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 
 ifeq ($(PRODUCT_GMS_CLIENTID_BASE),)
@@ -133,7 +135,9 @@ PRODUCT_PACKAGES += \
     SoundRecorder \
     Trebuchet \
     WallpaperPicker \
-    WeatherProvider
+    WeatherProvider \
+    Snap \
+    NexusLauncher
 
 # Exchange support
 PRODUCT_PACKAGES += \
@@ -239,6 +243,9 @@ PRODUCT_VERSION_MAJOR = 14
 PRODUCT_VERSION_MINOR = 1
 PRODUCT_VERSION_MAINTENANCE := 0
 
+# AOSGP version
+AOSGP_VERSION := X-2.0
+
 ifeq ($(TARGET_VENDOR_SHOW_MAINTENANCE_VERSION),true)
     CM_VERSION_MAINTENANCE := $(PRODUCT_VERSION_MAINTENANCE)
 else
@@ -309,24 +316,25 @@ ifeq ($(CM_BUILDTYPE), RELEASE)
     endif
 else
     ifeq ($(CM_VERSION_MAINTENANCE),0)
-        LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)$(CM_EXTRAVERSION)-$(CM_BUILD)
+        LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
     else
-        LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(CM_VERSION_MAINTENANCE)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)$(CM_EXTRAVERSION)-$(CM_BUILD)
+        LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
     endif
 endif
 
+AOSGP_DISPLAY_VERSION := aosgp-$(AOSGP_VERSION)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
+
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.cm.version=$(LINEAGE_VERSION) \
-    ro.cm.releasetype=$(CM_BUILDTYPE) \
-    ro.modversion=$(LINEAGE_VERSION) \
-    ro.cmlegal.url=https://lineageos.org/legal
+    ro.cm.version=$(AOSGP_DISPLAY_VERSION) \
+    ro.cm.releasetype= OFFICIAL \
+    ro.modversion=$(AOSGP_DISPLAY_VERSION)
 
 PRODUCT_EXTRA_RECOVERY_KEYS += \
     vendor/cm/build/target/product/security/lineage
 
 -include vendor/cm-priv/keys/keys.mk
 
-CM_DISPLAY_VERSION := $(LINEAGE_VERSION)
+CM_DISPLAY_VERSION := $(AOSGP_DISPLAY_VERSION)
 
 ifneq ($(PRODUCT_DEFAULT_DEV_CERTIFICATE),)
 ifneq ($(PRODUCT_DEFAULT_DEV_CERTIFICATE),build/target/product/security/testkey)
@@ -352,7 +360,7 @@ endif
 endif
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.cm.display.version=$(CM_DISPLAY_VERSION)
+    ro.cm.display.version=$(AOSGP_DISPLAY_VERSION)
 
 -include $(WORKSPACE)/build_env/image-auto-bits.mk
 -include vendor/cm/config/partner_gms.mk
