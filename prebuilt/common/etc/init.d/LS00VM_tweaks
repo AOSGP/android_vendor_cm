@@ -1,0 +1,130 @@
+#!/system/bin/sh
+# L SPEED MOD
+# Copyright (C) 2015 Paget96
+#=======================================================================#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#  You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#=======================================================================#
+
+busybox mount -o remount,rw /
+busybox mount -o remount,rw rootfs
+busybox mount -o remount,rw /system
+
+LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_vm_tweaks.log
+
+busybox rm -f $LS
+busybox touch $LS
+
+busybox echo "# L Speed log" | tee -a $LS
+busybox echo "" | tee -a $LS
+busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Adding VM tweaks..." | tee -a $LS
+
+busybox chmod 644 /proc/sys/vm/*
+busybox sysctl -e -w vm.dirty_expire_centisecs=200
+busybox sysctl -e -w vm.dirty_writeback_centisecs=500
+busybox sysctl -e -w vm.min_free_kbytes=4096
+busybox sysctl -e -w vm.overcommit_memory=1
+busybox sysctl -e -w vm.overcommit_ratio=80
+busybox sysctl -e -w vm.block_dump=0
+busybox sysctl -e -w vm.laptop_mode=0
+busybox sysctl -e -w vm.page-cluster=0
+busybox sysctl -e -w vm.panic_on_oom=0
+busybox sysctl -e -w vm.min_free_order_shift=4
+#busybox sysctl -e -w vm.drop_caches=3
+#busybox sysctl -e -w vm.drop_caches=1
+#busybox sysctl -e -w vm.lowmem_reserve_ratio='64 64 64'
+#busybox sysctl -e -w vm.mmap_min_addr=0
+
+mem=`awk '/MemTotal/{print $2}' /proc/meminfo`
+
+if [ "$mem" -lt 524288 ]; then
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=15
+    busybox sysctl -e -w vm.dirty_ratio=30
+    setprop dalvik.vm.heapsize 184m
+    setprop dalvik.vm.heapgrowthlimit 128m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=40
+else
+		busybox sysctl -e -w vm.swappiness=20
+	fi
+	busybox echo "VM profile for 512mb applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS
+elif [ "$mem" -lt 786432 ]; then
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=10
+    busybox sysctl -e -w vm.dirty_ratio=20
+    setprop dalvik.vm.heapsize 256m
+    setprop dalvik.vm.heapgrowthlimit 152m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=40
+else
+		busybox sysctl -e -w vm.swappiness=20
+	fi
+	busybox echo "VM profile for 768mb applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS
+elif [ "$mem" -lt 1048576 ]; then
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=5
+    busybox sysctl -e -w vm.dirty_ratio=10
+    setprop dalvik.vm.heapsize 320m
+    setprop dalvik.vm.heapgrowthlimit 192m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=40
+else
+		busybox sysctl -e -w vm.swappiness=20
+	fi
+	busybox echo "VM profile for 1gb applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS
+elif [ "$mem" -lt 1572864 ]; then
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=5
+    busybox sysctl -e -w vm.dirty_ratio=10
+    setprop dalvik.vm.heapsize 384m
+    setprop dalvik.vm.heapgrowthlimit 224m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=0
+else
+		busybox sysctl -e -w vm.swappiness=0
+	fi
+	busybox echo "VM profile for 1.5gb applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS
+elif [ "$mem" -lt 2097152 ]; then
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=5
+    busybox sysctl -e -w vm.dirty_ratio=10
+    setprop dalvik.vm.heapsize 448m
+    setprop dalvik.vm.heapgrowthlimit 256m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=0
+else
+		busybox sysctl -e -w vm.swappiness=0
+	fi
+	busybox echo "VM profile for 2gb applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS	
+elif [ "$mem" -lt 3145728 ]; then
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=5
+    busybox sysctl -e -w vm.dirty_ratio=10
+    setprop dalvik.vm.heapsize 512m
+    setprop dalvik.vm.heapgrowthlimit 288m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=0
+else
+		busybox sysctl -e -w vm.swappiness=0
+	fi
+	busybox echo "VM profile for 3gb applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS	
+else
+    busybox chmod 644 /proc/sys/vm/*
+    busybox sysctl -e -w vm.dirty_background_ratio=5
+    busybox sysctl -e -w vm.dirty_ratio=10
+    setprop dalvik.vm.heapsize 512m
+    setprop dalvik.vm.heapgrowthlimit 288m
+if [ -e /sys/block/zram* ];  then
+		busybox sysctl -e -w vm.swappiness=0
+else
+		busybox sysctl -e -w vm.swappiness=0
+	fi
+	busybox echo "VM profile for 3gb+ applied at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LS
+fi

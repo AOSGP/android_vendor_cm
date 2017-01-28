@@ -1,7 +1,5 @@
 PRODUCT_BRAND ?= LineageOS
 
-PRODUCT_BOOTANIMATION := vendor/cm/prebuilt/common/bootanimation/bootanimation.zip
-
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 
 ifeq ($(PRODUCT_GMS_CLIENTID_BASE),)
@@ -57,6 +55,33 @@ PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner \
     vendor/cm/prebuilt/common/bin/sysinit:system/bin/sysinit
 
+# AOSGP Tweaks support
+PRODUCT_COPY_FILES += \
+    vendor/cm/prebuilt/common/etc/init.d/00ARCHIDROID_INITD:system/etc/init.d/00ARCHIDROID_INITD \
+    vendor/cm/prebuilt/common/etc/init.d/LS00better_scrolling:system/etc/init.d/LS00better_scrolling \
+    vendor/cm/prebuilt/common/etc/init.d/LS00Cleaner:system/etc/init.d/LS00Cleaner \
+    vendor/cm/prebuilt/common/etc/init.d/LS00CPU:system/etc/init.d/LS00CPU \
+    vendor/cm/prebuilt/common/etc/init.d/LS00flag_tuner:system/etc/init.d/LS00flag_tuner \
+    vendor/cm/prebuilt/common/etc/init.d/LS00improve_battery:system/etc/init.d/LS00improve_battery \
+    vendor/cm/prebuilt/common/etc/init.d/LS00IO:system/etc/init.d/LS00IO \
+    vendor/cm/prebuilt/common/etc/init.d/LS00Kernel_tweaks:system/etc/init.d/LS00Kernel_tweaks \
+    vendor/cm/prebuilt/common/etc/init.d/LS00Net_tweaks:system/etc/init.d/LS00Net_tweaks \
+    vendor/cm/prebuilt/common/etc/init.d/LS00Ram_manager_BL:system/etc/init.d/LS00Ram_manager_BL \
+    vendor/cm/prebuilt/common/etc/init.d/LS00Seeder_enlarger:system/etc/init.d/LS00Seeder_enlarger \
+    vendor/cm/prebuilt/common/etc/init.d/LS00VM_tweaks:system/etc/init.d/LS00VM_tweaks \
+    vendor/cm/prebuilt/common/etc/init.d/X00CORE4:system/etc/init.d/X00CORE4 \
+    vendor/cm/prebuilt/common/etc/init.d/X00DEFAULT:system/etc/init.d/X00DEFAULT \
+    vendor/cm/prebuilt/common/etc/init.d/X00LIQUID:system/etc/init.d/X00LIQUID \
+    vendor/cm/prebuilt/common/etc/init.d/X00LMK1:system/etc/init.d/X00LMK1 \
+    vendor/cm/prebuilt/common/etc/init.d/X00MPS2:system/etc/init.d/X00MPS2 \
+    vendor/cm/prebuilt/common/etc/init.d/X00NET4:system/etc/init.d/X00NET4 \
+    vendor/cm/prebuilt/common/etc/init.d/X00RENICE:system/etc/init.d/X00RENICE \
+    vendor/cm/prebuilt/common/etc/init.d/X00SS:system/etc/init.d/X00SS \
+    vendor/cm/prebuilt/common/etc/init.d/X00TRIM:system/etc/init.d/X00TRIM \
+    vendor/cm/prebuilt/common/etc/init.d/X00ZIP:system/etc/init.d/X00ZIP \
+    vendor/cm/prebuilt/common/priv-app/MotoDoze/MotoDoze.apk:system/priv-app/MotoDoze/MotoDoze.apk \
+    vendor/cm/prebuilt/common/media/bootanimation.zip:system/media/bootanimation.zip
+
 ifneq ($(TARGET_BUILD_VARIANT),user)
 # userinit support
 PRODUCT_COPY_FILES += \
@@ -93,10 +118,6 @@ ifneq ($(TARGET_DISABLE_CMSDK), true)
 # CMSDK
 include vendor/cm/config/cmsdk_common.mk
 endif
-
-# Bootanimation
-PRODUCT_PACKAGES += \
-    bootanimation.zip
 
 # Required CM packages
 PRODUCT_PACKAGES += \
@@ -306,9 +327,9 @@ ifeq ($(CM_BUILDTYPE), RELEASE)
     else
         ifeq ($(TARGET_BUILD_VARIANT),user)
             ifeq ($(CM_VERSION_MAINTENANCE),0)
-                LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(TARGET_VENDOR_RELEASE_BUILD_ID)-$(CM_BUILD)
+                LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
             else
-                LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(CM_VERSION_MAINTENANCE)-$(TARGET_VENDOR_RELEASE_BUILD_ID)-$(CM_BUILD)
+                LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
             endif
         else
             LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)$(PRODUCT_VERSION_DEVICE_SPECIFIC)-$(CM_BUILD)
@@ -316,13 +337,13 @@ ifeq ($(CM_BUILDTYPE), RELEASE)
     endif
 else
     ifeq ($(CM_VERSION_MAINTENANCE),0)
-        LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
+        LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
     else
-        LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
+        LINEAGE_VERSION := aosgp-$(AOSGP_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
     endif
 endif
 
-AOSGP_DISPLAY_VERSION := aosgp-$(AOSGP_VERSION)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
+AOSGP_DISPLAY_VERSION := aosgp-$(AOSGP_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILD)
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.cm.version=$(AOSGP_DISPLAY_VERSION) \

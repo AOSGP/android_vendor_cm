@@ -1,0 +1,81 @@
+#!/system/bin/sh
+# L SPEED MOD
+# Copyright (C) 2015 Paget96
+#=======================================================================#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#  You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#=======================================================================#
+
+busybox mount -o remount,rw /
+busybox mount -o remount,rw rootfs
+busybox mount -o remount,rw /system
+
+LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_kernel_tweaks.log
+
+busybox rm -f $LS
+busybox touch $LS
+
+busybox echo "# L Speed log" | tee -a $LS
+busybox echo "" | tee -a $LS
+busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Adding kernel tweaks.." | tee -a $LS
+
+# Kernel setup and calculations
+RAM=$((`awk '/MemTotal/{print $2}' /proc/meminfo`/1024))
+filemax=$(($RAM/4*256))
+
+if [ -e /proc/sys/kernel/shmmni ]; then
+     busybox echo "2048" > /proc/sys/kernel/shmmni
+fi
+if [ -e /proc/sys/kernel/shmall ]; then 
+      busybox echo "1572864" > /proc/sys/kernel/shmall
+fi
+if [ -e /proc/sys/kernel/shmmax ]; then 
+       busybox echo "33554432" > /proc/sys/kernel/shmmax
+fi
+if [ -e /proc/sys/kernel/msgmnb ]; then 
+        busybox echo "16384" > /proc/sys/kernel/msgmnb
+fi
+if [ -e /proc/sys/kernel/msgmax ]; then 
+        busybox echo "8192" > /proc/sys/kernel/msgmax
+fi
+
+busybox echo "Kernel parameters are updated" | tee -a $LS
+
+#Dynamic fsync
+if [ -e /sys/kernel/dyn_fsync/Dyn_fsync_active ]; then
+       busybox echo "1" > /sys/kernel/dyn_fsync/Dyn_fsync_active
+fi
+
+if [ -e /sys/kernel/dyn_fsync/Dyn_fsync_active ]; then
+busybox echo "Dyn_fsync enabled" | tee -a $LS
+else
+busybox echo "Dyn_fsync doesn't exist on your kernel" | tee -a $LS
+fi
+
+#FS tweak
+if [ -e /proc/sys/fs/lease-break-time ]; then 
+	     busybox echo "5" > /proc/sys/fs/lease-break-time
+fi
+if [ -e /proc/sys/fs/inotify/max_queued_events ]; then
+        busybox echo "32000" > /proc/sys/fs/inotify/max_queued_events
+fi
+if [ -e /proc/sys/fs/inotify/max_user_instances ]; then 
+        busybox echo "256" > /proc/sys/fs/inotify/max_user_instances
+fi
+if [ -e /proc/sys/fs/inotify/max_user_watches ]; then
+           busybox echo "10240" > /proc/sys/fs/inotify/max_user_watches
+fi
+if [ -e /proc/sys/fs/file-max ]; then
+        busybox echo $filemax > /proc/sys/fs/file-max
+fi
+
+busybox echo "File system parameters are updated" | tee -a $LS
+
+busybox echo "" | tee -a $LS
+busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Kernel tweaks added" | tee -a $LS

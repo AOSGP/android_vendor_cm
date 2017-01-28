@@ -1,0 +1,53 @@
+#!/system/bin/sh
+# PROJECT MOD BOOST EDITION  
+# NITRO X_SPARK EDITION V-II™ 
+# Copyright (C) 2015 K1ks
+#=======================================================================#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#  You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#=======================================================================#
+
+busybox mount -o remount,rw /
+busybox mount -o remount,rw rootfs
+busybox mount -o remount,rw /system
+
+PMB=/system/etc/Nitro/X00SS.log
+
+if [ -e $PMB ]; then
+busybox	rm $PMB;
+fi
+
+busybox touch $PMB;
+busybox echo "# NITRO X_SPARK EDITION" | tee -a $PMB;
+busybox echo "" | tee -a $PMB;
+busybox echo "# STARTING UP OF NITRO X : $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $PMB;
+busybox echo "" | tee -a $PMB;
+
+# Scroll_Speed =========================================#
+
+# Disable Scolling Cache for Faster Scrolling
+setprop persist.sys.scrollingcache 3
+busybox echo "Scolling Cache Disabled..." | tee -a $PMB
+
+# Mediatek / Qualcomm Devices Tweak
+if [ -e /sys/module/tpd_setting/parameters/tpd_mode ]; then
+busybox chmod 644 /sys/module/tpd_setting/parameters/tpd_mode
+busybox echo "1" > /sys/module/tpd_setting/parameters/tpd_mode
+busybox echo "Scroll Speed 1 : Activated..." | tee -a $PMB	
+
+elif [ -e /sys/module/hid_magicmouse/parameters/scroll_speed ]; then
+busybox chmod 644 /sys/module/hid_magicmouse/parameters/scroll_speed
+busybox echo "62" > /sys/module/hid_magicmouse/parameters/scroll_speed
+busybox echo "Scroll Speed 2 : Activated..." | tee -a $PMB
+
+else
+busybox echo "Scroll Speed Not Supported..." | tee -a $PMB
+fi;
+busybox echo "" | tee -a $PMB;
+busybox echo "# END OF THE NITRO X : $( date +"%m-%d-%Y %H:%M:%S" ) " | tee -a $PMB

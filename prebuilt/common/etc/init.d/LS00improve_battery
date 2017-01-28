@@ -1,0 +1,38 @@
+#!/system/bin/sh
+# L SPEED MOD
+# Copyright (C) 2015 Paget96
+#=======================================================================#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#  You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#=======================================================================#
+
+busybox mount -o remount,rw /
+busybox mount -o remount,rw rootfs
+busybox mount -o remount,rw /system
+
+LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_improve_batttery.log
+
+busybox rm -f $LS
+busybox touch $LS
+
+busybox echo "# L Speed log" | tee -a $LS
+busybox echo "" | tee -a $LS
+busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Improving battery..." | tee -a $LS
+
+setprop ro.mot.eri.losalert.delay 1000
+setprop ro.ril.disable.power.collapse 1
+setprop pm.sleep_mode 2
+setprop wifi.supplicant_scan_interval 180
+setprop power_supply.wakeup enable
+setprop power.saving.mode 1
+setprop ro.config.hw_power_saving 1
+setprop ro.vold.umsdirtyratio 20
+
+busybox echo "" | tee -a $LS
+busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Battery tweaks is enabled" | tee -a $LS
