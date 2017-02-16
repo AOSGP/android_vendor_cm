@@ -158,7 +158,8 @@ PRODUCT_PACKAGES += \
     WallpaperPicker \
     WeatherProvider \
     Snap \
-    NexusLauncher
+    NexusLauncher \
+    masquerade
 
 # Exchange support
 PRODUCT_PACKAGES += \
