@@ -80,6 +80,7 @@ PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/init.d/X00TRIM:system/etc/init.d/X00TRIM \
     vendor/cm/prebuilt/common/etc/init.d/X00ZIP:system/etc/init.d/X00ZIP \
     vendor/cm/prebuilt/common/priv-app/MotoDoze/MotoDoze.apk:system/priv-app/MotoDoze/MotoDoze.apk \
+    vendor/cm/prebuilt/common/priv-app/Substratum/substratum.apk:system/priv-app/Substratum/substratum.apk \
     vendor/cm/prebuilt/common/media/bootanimation.zip:system/media/bootanimation.zip
 
 ifneq ($(TARGET_BUILD_VARIANT),user)
