@@ -146,20 +146,18 @@ PRODUCT_PACKAGES += \
     AudioFX \
     CMFileManager \
     CMSettingsProvider \
-    CMUpdater \
     CMWallpapers \
     CyanogenSetupWizard \
     Eleven \
     ExactCalculator \
     LiveLockScreenService \
     LockClock \
-    Screencast \
-    SoundRecorder \
     Trebuchet \
     WallpaperPicker \
     WeatherProvider \
     Snap \
     NexusLauncher \
+    ResurrectionOTA \
     masquerade
 
 # Exchange support
