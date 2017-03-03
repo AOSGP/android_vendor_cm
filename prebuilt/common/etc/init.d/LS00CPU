@@ -12,24 +12,33 @@
 #  You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #=======================================================================#
 
-busybox mount -o remount,rw /
-busybox mount -o remount,rw rootfs
-busybox mount -o remount,rw /system
+busybox=/system/etc/L_SPEED/00L_STUFF/busybox
+
+mount -o rw,remount / 2>/dev/null
+mount -o rw,remount / / 2>/dev/null
+mount -o rw,remount rootfs 2>/dev/null
+mount -o rw,remount /system 2>/dev/null
+mount -o rw,remount /system /system 2>/dev/null
+$busybox mount -o rw,remount / 2>/dev/null
+$busybox mount -o rw,remount / / 2>/dev/null
+$busybox mount -o rw,remount rootfs 2>/dev/null
+$busybox mount -o rw,remount /system 2>/dev/null
+$busybox mount -o rw,remount /system /system 2>/dev/null
 
 LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_cpu.log
 
-busybox rm -f $LS
-busybox touch $LS
+$busybox rm -f $LS
+$busybox touch $LS
 
-busybox echo "# L Speed log" | tee -a $LS
-busybox echo "" | tee -a $LS
-busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) CPU multicore power save is running..." | tee -a $LS
+$busybox echo "# L Speed log" | $busybox tee -a $LS
+$busybox echo "" | $busybox tee -a $LS
+$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) CPU multicore power save is running..." | $busybox tee -a $LS
 
 if [ -e /sys/devices/system/cpu/sched_mc_power_savings ]; then 
-busybox echo "2" > /sys/devices/system/cpu/sched_mc_power_savings
+$busybox echo "2" > /sys/devices/system/cpu/sched_mc_power_savings
 fi
 
-if [ /sys/devices/system/cpu/sched_mc_power_savings=2 ]; then
-	busybox echo "Feature enabled" | tee -a $LS; else
-	busybox echo "This feature is not avaible for you, because your device is not multi core" | tee -a $LS
+if [ "`$busybox grep 2 /sys/devices/system/cpu/sched_mc_power_savings`" ]; then
+$busybox echo "Feature enabled" | $busybox tee -a $LS; else
+$busybox echo "This feature is not avaible for you, because your device is not multi core or your CPU doesn't support it" | $busybox tee -a $LS
 fi

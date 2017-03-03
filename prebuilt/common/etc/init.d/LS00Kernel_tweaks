@@ -12,70 +12,45 @@
 #  You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #=======================================================================#
 
-busybox mount -o remount,rw /
-busybox mount -o remount,rw rootfs
-busybox mount -o remount,rw /system
+busybox=/system/etc/L_SPEED/00L_STUFF/busybox
+
+mount -o rw,remount / 2>/dev/null
+mount -o rw,remount / / 2>/dev/null
+mount -o rw,remount rootfs 2>/dev/null
+mount -o rw,remount /system 2>/dev/null
+mount -o rw,remount /system /system 2>/dev/null
+$busybox mount -o rw,remount / 2>/dev/null
+$busybox mount -o rw,remount / / 2>/dev/null
+$busybox mount -o rw,remount rootfs 2>/dev/null
+$busybox mount -o rw,remount /system 2>/dev/null
+$busybox mount -o rw,remount /system /system 2>/dev/null
 
 LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_kernel_tweaks.log
 
-busybox rm -f $LS
-busybox touch $LS
+$busybox rm -f $LS
+$busybox touch $LS
 
-busybox echo "# L Speed log" | tee -a $LS
-busybox echo "" | tee -a $LS
-busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Adding kernel tweaks.." | tee -a $LS
-
-# Kernel setup and calculations
-RAM=$((`awk '/MemTotal/{print $2}' /proc/meminfo`/1024))
-filemax=$(($RAM/4*256))
-
-if [ -e /proc/sys/kernel/shmmni ]; then
-     busybox echo "2048" > /proc/sys/kernel/shmmni
-fi
-if [ -e /proc/sys/kernel/shmall ]; then 
-      busybox echo "1572864" > /proc/sys/kernel/shmall
-fi
-if [ -e /proc/sys/kernel/shmmax ]; then 
-       busybox echo "33554432" > /proc/sys/kernel/shmmax
-fi
-if [ -e /proc/sys/kernel/msgmnb ]; then 
-        busybox echo "16384" > /proc/sys/kernel/msgmnb
-fi
-if [ -e /proc/sys/kernel/msgmax ]; then 
-        busybox echo "8192" > /proc/sys/kernel/msgmax
-fi
-
-busybox echo "Kernel parameters are updated" | tee -a $LS
+$busybox echo "# L Speed log" | $busybox tee -a $LS
+$busybox echo "" | $busybox tee -a $LS
+$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Adding kernel tweaks.." | $busybox tee -a $LS
 
 #Dynamic fsync
 if [ -e /sys/kernel/dyn_fsync/Dyn_fsync_active ]; then
-       busybox echo "1" > /sys/kernel/dyn_fsync/Dyn_fsync_active
+       $busybox echo "1" > /sys/kernel/dyn_fsync/Dyn_fsync_active
 fi
-
 if [ -e /sys/kernel/dyn_fsync/Dyn_fsync_active ]; then
-busybox echo "Dyn_fsync enabled" | tee -a $LS
+$busybox echo "Dyn_fsync enabled" | $busybox tee -a $LS
 else
-busybox echo "Dyn_fsync doesn't exist on your kernel" | tee -a $LS
+$busybox echo "Dyn_fsync doesn't exist on your kernel" | $busybox tee -a $LS
 fi
 
 #FS tweak
-if [ -e /proc/sys/fs/lease-break-time ]; then 
-	     busybox echo "5" > /proc/sys/fs/lease-break-time
-fi
-if [ -e /proc/sys/fs/inotify/max_queued_events ]; then
-        busybox echo "32000" > /proc/sys/fs/inotify/max_queued_events
-fi
-if [ -e /proc/sys/fs/inotify/max_user_instances ]; then 
-        busybox echo "256" > /proc/sys/fs/inotify/max_user_instances
-fi
-if [ -e /proc/sys/fs/inotify/max_user_watches ]; then
-           busybox echo "10240" > /proc/sys/fs/inotify/max_user_watches
-fi
-if [ -e /proc/sys/fs/file-max ]; then
-        busybox echo $filemax > /proc/sys/fs/file-max
-fi
+$busybox sysctl -w fs.lease-break-time=5
+$busybox sysctl -w fs.inotify.max_queued_events=32000
+$busybox sysctl -w fs.inotify.max_user_instances=256
+$busybox sysctl -w fs.inotify.max_user_watches=10240
 
-busybox echo "File system parameters are updated" | tee -a $LS
+$busybox echo "File system parameters are updated" | $busybox tee -a $LS
 
-busybox echo "" | tee -a $LS
-busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Kernel tweaks added" | tee -a $LS
+$busybox echo "" | $busybox tee -a $LS
+$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Kernel tweaks added" | $busybox tee -a $LS

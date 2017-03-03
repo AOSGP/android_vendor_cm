@@ -25,27 +25,30 @@ $busybox mount -o rw,remount rootfs 2>/dev/null
 $busybox mount -o rw,remount /system 2>/dev/null
 $busybox mount -o rw,remount /system /system 2>/dev/null
 
-LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_improve_batttery.log
+LS=/system/etc/L_SPEED/00L_STUFF/LOGS/LS_cpu_optimizer.log
 
 $busybox rm -f $LS
 $busybox touch $LS
 
 $busybox echo "# L Speed log" | $busybox tee -a $LS
 $busybox echo "" | $busybox tee -a $LS
-$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Improving battery..." | $busybox tee -a $LS
+$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Optimizing CPU.." | $busybox tee -a $LS
 
-setprop debug.sf.hw 1
-setprop ro.ril.power_collapse 0
-setprop ro.ril.disable.power.collapse 1
-setprop persist.sys.use_dithering 0
-setprop wifi.supplicant_scan_interval 180
-setprop power_supply.wakeup enable
-setprop power.saving.mode 1
-setprop ro.config.hw_power_saving 1
-setprop ro.config.hw_power_saving true
-setprop ro.qcom.ad 1
-setprop ro.qcom.ad.calib.data /system/etc/L_SPEED/00L_STUFF/ad_calib.cfg
-setprop persist.radio.add_power_save 1
+#Source - google code
+# Thanks to @fivefour
+pid=$($busybox pgrep surfaceflinger 2>/dev/null)
+$busybox $pid >> /dev/cpuctl/cgroup.procs 2>/dev/null
+for i in `ls /proc/$pid/task 2>/dev/null`; do
+  $busybox $i >> /dev/cpuctl/tasks 2>/dev/null
+done
+
+pid=$($busybox pgrep binder 2>/dev/null)
+$busybox echo $pid >> /dev/cpuctl/cgroup.procs 2>/dev/null
+for i in `ls /proc/$pid/task 2>/dev/null`; do
+  $busybox echo $i >> /dev/cpuctl/tasks 2>/dev/null
+done
+
+$busybox echo 96 > /dev/cpuctl/bg_non_interactive/cpu.shares 2>/dev/null
 
 $busybox echo "" | $busybox tee -a $LS
-$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) Battery tweaks is enabled" | $busybox tee -a $LS
+$busybox echo "$( date +"%m-%d-%Y %H:%M:%S" ) CPU is optimized" | $busybox tee -a $LS
